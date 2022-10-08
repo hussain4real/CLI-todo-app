@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
+	"strconv"
 )
 
 // welcome page function
@@ -11,8 +13,12 @@ import (
 // delete a singleTodo
 // list all Todos created
 
-var TODOLIST = []string{"Default todo"}
-var Id string
+type TODO struct {
+	Id   string
+	Todo string
+}
+
+var TODOLIST []TODO
 var menuNumber int
 
 func main() {
@@ -43,7 +49,7 @@ func mainMenu() {
 	case 2:
 		listTodo()
 	case 3:
-		editTodo()
+		updateTodo()
 	case 4:
 		deleteTodo()
 	case 0:
@@ -69,18 +75,60 @@ func listTodo() {
 	fmt.Println("list of item in your TODO list ")
 	for index, item := range TODOLIST {
 		fmt.Printf("TODO #%v: %v", index+1, item)
+		newLine(1)
 	}
 
 	mainMenu()
 }
 
 func createTodo() {
-	fmt.Println("Creating todo")
+	fmt.Println("Please enter your Todo item")
+	var todoInput string
+	_, err := fmt.Scan(&todoInput)
+	if err != nil {
+		fmt.Println("Error: Please enter a valid todo item")
+	}
+
+	var todo TODO
+	todo.Id = strconv.Itoa(rand.Intn(100000))
+	todo.Todo = todoInput
+
+	TODOLIST = append(TODOLIST, todo)
+	fmt.Println("Todo item added")
 	mainMenu()
 }
 
-func editTodo() {
-	fmt.Println("Editing todo item")
+func updateTodo() {
+	var updateItem string
+	var updateInput string
+	fmt.Println("Enter the id of the item you want to update: ")
+	_, err := fmt.Scan(&updateItem)
+	if err != nil {
+		fmt.Println("Error:, please select the correct menu item")
+	}
+	for index, item := range TODOLIST {
+		if item.Id == updateItem {
+			TODOLIST = append(TODOLIST[:index], TODOLIST[index+1:]...)
+			var newTodo TODO
+			//Todo: display current todo item to user
+
+			fmt.Println("Enter your todo: ")
+			_, err := fmt.Scan(&updateInput)
+			if err != nil {
+				fmt.Println("Error:, please select the correct menu item")
+			}
+
+			newTodo.Id = updateItem
+			newTodo.Todo = updateInput
+
+			TODOLIST = append(TODOLIST, newTodo)
+
+			fmt.Println("Todo item updated")
+			mainMenu()
+		}
+	}
+
+	fmt.Println("Todo item not found!")
 	mainMenu()
 }
 
